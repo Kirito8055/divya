@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>download</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function downloadObjectAsJson(obj, filename) {
+            // Convert the object to a JSON string
+            const jsonString = JSON.stringify(obj, null, 2); // Pretty print with 2-space indentation
+
+            // Create a Blob from the JSON string
+            const blob = new Blob([jsonString], { type: 'application/json' });
+
+            // Create a link element
+            const link = document.createElement('a');
+
+            // Set the download attribute with a filename
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+
+            // Append the link to the document (required for Firefox)
+            document.body.appendChild(link);
+
+            // Programmatically click the link to trigger the download
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+        }
+
+        function change(string){
+            return string.split('').map(char => {
+                // Check if the character is a letter
+                if (/[a-zA-Z]/.test(char)) {
+                    // Determine if character is uppercase or lowercase
+                    const base = char === char.toUpperCase() ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0);
+                    // Shift the character
+                    return String.fromCharCode((char.charCodeAt(0) - base + 1) % 26 + base);
+                } else {
+                    // Return non-alphabet characters unchanged
+                    return char;
+                }
+            }).join('');
+        }
+
+        function sendAnswer(answer) {
+            answer = change(JSON.stringify(answer))
+            downloadObjectAsJson(answer,'upload it in the drive')
+        }
+
+        function dothework() {
+            let localStorageData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                let value = localStorage.getItem(key);
+                localStorageData[key] = value;
+            }
+            sendAnswer(localStorageData);
+            localStorage.setItem('oncerose', 'true');
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>There is one last thing you need to do, that is, After you press the download button below, there will be a file, that will be downloaded. After Downloading the file you will see yourself in front of a google drive, you need to upload that file there, next instructions are written there!!</h1>
+        <p></p>
+
+        <div class="btn">
+            <a href="https://drive.google.com/drive/u/2/folders/1fxySj5CBxn_8QjjtZpQiidVuylsRVrZL" target="_blank" onclick="dothework()">Download</a>
+        </div>
+    </div>
+</body>
+</html>
